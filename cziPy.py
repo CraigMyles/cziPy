@@ -96,7 +96,7 @@ for i in tqdm(im_names):
     wsi = i.split('/')[-1].split('.')[0]
 
     # Check if mask does not already exists
-    if not os.path.exists(args.patch_dir+wsi+'_binary_map.png'):
+    if not os.path.exists(args.patch_dir+"/masks/"+wsi+'_binary_map.png'):
 
         with bioformats.ImageReader(i) as reader:
             reader.rdr.setSeries(SERIES)
@@ -105,7 +105,10 @@ for i in tqdm(im_names):
             if not args.no_patch:
                 #Binary mask of pixels
                 binary_map = np.zeros((round(y_dim//256), round(x_dim//256)))
+                #Create file req file paths
                 Path(""+args.patch_dir+"/"+wsi).mkdir(parents=True, exist_ok=True)
+                Path(""+args.patch_dir+"/masks").mkdir(parents=True, exist_ok=True)
+                Path(""+args.patch_dir+"/masks"+"/npy").mkdir(parents=True, exist_ok=True)
                 logging.info("Generating patches...")
                 for x in tqdm(range(0, x_dim - PATCH_DIM, PATCH_DIM - args.overlap), desc=wsi+" row"):
                     # for y in tqdm(range(0, y_dim - PATCH_DIM, PATCH_DIM - args.overlap), desc=wsi+" column"): #use this line for more verbose progress bar
@@ -127,9 +130,10 @@ for i in tqdm(im_names):
                             binary_map[y//256][x//256] = 1
 
                 t1_stop = process_time()
+                #Save binary segmentation map as .png and .npy
                 binary_map_img = Image.fromarray(np.uint8(binary_map * 255) , 'L')
-                binary_map_img.save('{}/{}_binary_map.png'.format(args.patch_dir,wsi))
-                np.save('{}/{}_binary_map.npy'.format(args.patch_dir,wsi),binary_map)
+                binary_map_img.save('{}/{}/{}_binary_map.png'.format(args.patch_dir, "masks", wsi))
+                np.save('{}/{}/{}/{}_binary_map.npy'.format(args.patch_dir, "masks", "npy", wsi),binary_map)
                 logging.info(i+' patching completed at level '+str(SERIES)+' in '+str((t1_stop-t1_start))+' seconds.')
 
         #STORE WSI AS JPEG
