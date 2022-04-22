@@ -98,11 +98,12 @@ for i in tqdm(im_names):
     # Check if mask does not already exists
     if not os.path.exists(args.patch_dir+"/masks/"+wsi+'_binary_map.png'):
 
-        with bioformats.ImageReader(i) as reader:
-            reader.rdr.setSeries(SERIES)
-            x_dim, y_dim = reader.rdr.getSizeX(), reader.rdr.getSizeY()
+        if not args.no_patch:
             
-            if not args.no_patch:
+            with bioformats.ImageReader(i) as reader:
+                reader.rdr.setSeries(SERIES)
+                x_dim, y_dim = reader.rdr.getSizeX(), reader.rdr.getSizeY()
+                
                 #Binary mask of pixels
                 binary_map = np.zeros((round(y_dim//PATCH_DIM), round(x_dim//PATCH_DIM)))
                 #Create file req file paths
