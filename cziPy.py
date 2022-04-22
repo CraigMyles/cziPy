@@ -104,7 +104,7 @@ for i in tqdm(im_names):
             
             if not args.no_patch:
                 #Binary mask of pixels
-                binary_map = np.zeros((round(y_dim//256), round(x_dim//256)))
+                binary_map = np.zeros((round(y_dim//PATCH_DIM), round(x_dim//PATCH_DIM)))
                 #Create file req file paths
                 Path(""+args.patch_dir+"/"+wsi).mkdir(parents=True, exist_ok=True)
                 Path(""+args.patch_dir+"/masks").mkdir(parents=True, exist_ok=True)
@@ -127,7 +127,7 @@ for i in tqdm(im_names):
 
                             generated_patches.append(patch_name)
                             #Pixel at current binary map location should be black (1)
-                            binary_map[y//256][x//256] = 1
+                            binary_map[y//PATCH_DIM][x//PATCH_DIM] = 1
 
                 t1_stop = process_time()
                 #Save binary segmentation map as .png and .npy
